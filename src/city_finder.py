@@ -1,14 +1,6 @@
 import pywikibot
-from json import loads
 
 site = pywikibot.Site('pt')
-
-
-with open('datafiles/estados-cidades.json', 'r') as locations:
-	cities_json = loads(locations.read())
-
-cities_names = [state['cidades'] for state in cities_json['estados']]
-states_names = [state['nome'] for state in cities_json['estados']]
 
 
 def find_city_article(city: str, state: str):

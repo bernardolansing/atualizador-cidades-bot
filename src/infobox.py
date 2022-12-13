@@ -14,9 +14,15 @@ class Infobox:
 		if not template_with_args:
 			raise Exception('Could not find info template in given article.')
 
-		for fieldstring in template_with_args[1]:
-			field, value = fieldstring.split('=', 1)
-			self.fields[field] = value
+		args_string = template_with_args[1]
+		for fieldstring in args_string:
+			try:
+				field, value = fieldstring.split('=', 1)
+				self.fields[field] = value
+
+			# unexpected field format
+			except ValueError:
+				continue
 
 	def set_field(self, field_name: str, field_value: str):
 		self.fields[field_name] = field_value

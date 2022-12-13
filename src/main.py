@@ -23,8 +23,8 @@ def edit_hdi(infobox: Infobox, hdi: str):
 # 			# edit_hdi(infobox, )
 
 
-article = find_city_article('Melgaço', 'Pará')
+article = find_city_article('Rio Pardo', 'Rio Grande do Sul')
 infobox = Infobox(article)
-edit_hdi(infobox, '0.418')
+edit_hdi(infobox, '0.693')
 article.text = produce_new_raw(article.text, infobox.generate_raw())
 article.save('Atualizado IDHM.')
