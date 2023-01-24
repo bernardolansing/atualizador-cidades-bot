@@ -1,2 +1,3 @@
-pywikibot
-mwparserfromhell
+pywikibot==7.7.1
+mwparserfromhell==0.6.4
+xlrd==2.0.1

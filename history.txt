@@ -1,0 +1,6 @@
+Este arquivo serve para guardar registros de todas as execuções do Atualizador-cidades-bot.
+Por favor, NÃO o modifique manualmente, o programa cuidará de todas as alterações.
+Os registros estão postados em ordem cronológica decrescente (mais recentes por cima).
+
+------------------------------------------------------------------------------------------------------------------------
+
