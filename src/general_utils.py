@@ -58,3 +58,18 @@ def generate_access_date():
 
 def format_as_currency(n: float):
     return locale.currency(n, grouping=True, symbol=False)
+
+
+def make_reference(refname: str, link: str, title: str, publisher: str, year):
+    """Creates and returns a full reference and another ref that links for it. Use the full reference
+    only once, and then its link every other time."""
+    ref = '<ref name="' + refname + '">{{Citar web'
+    ref += ' |url=' + link
+    ref += ' |titulo=' + title
+    ref += ' |publicado=' + publisher
+    ref += ' |ano=' + str(year)
+    ref += '}}</ref>'
+
+    ref_tag = f'<ref name="{refname}" />'
+
+    return ref, ref_tag

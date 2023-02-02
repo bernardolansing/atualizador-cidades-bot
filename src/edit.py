@@ -3,6 +3,9 @@ from general_utils import get_state_name_by_acronym
 from history import new_history_entry
 from infobox import Infobox
 from pywikibot import Page
+import os
+
+debugging = int(os.getenv('DEBUG_MODE'))
 
 
 class Edit:
@@ -20,7 +23,10 @@ class Edit:
         new_source = produce_new_raw(self.article.text, new_infobox.generate_raw())
         self.article.text = new_source
         try:
-            self.article.save(summary=self.summary)
+            if debugging:
+                breakpoint()
+            else:
+                self.article.save(summary=self.summary)
         except:
             self.report_failure()
             return
@@ -37,6 +43,10 @@ class SerialEdits:
     def __init__(self):
         self.current_id = 1
         self.edits = []
+
+        if debugging:
+            self.public_summary = 'Teste de edição do Atualizador-cidades-bot'
+            return
 
         while True:
             operator = input('Please, identify yourself as a operator. ')
@@ -64,6 +74,9 @@ class SerialEdits:
         return new_edit
 
     def finish(self):
+        if debugging:
+            return
+
         while True:
             answer = input('Do you wish to report a success rate? [y] / [n] ')
             if answer.lower() == 'y':
