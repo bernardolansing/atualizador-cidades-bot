@@ -30,26 +30,22 @@ class Infobox:
     def edit_hdi(self, hdi, year, reference: str = None):
         self._set_field('idh', str(hdi).replace(',', '.'))
         self._set_field('data_idh', str(year))
-        if reference:
-            self._set_field('idh_ref', reference)
+        self._set_field('idh_ref', reference if reference else '')
 
-    def edit_gini(self, gini: str, year, reference: str = None):
-        self._set_field('gini', gini.replace(',', '.'))
+    def edit_gini(self, gini: float, year, reference: str = None):
+        self._set_field('gini', str(gini).replace(',', '.'))
         self._set_field('data_gini', str(year))
-        if reference:
-            self._set_field('gini_ref', reference)
+        self._set_field('gini_ref', reference if reference else '')
 
     def edit_population(self, population, year, reference: str = None):
         self._set_field('população', str(population))
         self._set_field('população_data', str(year))
-        if reference:
-            self._set_field('população_ref', reference)
+        self._set_field('população_ref', reference if reference else '')
 
     def edit_igp(self, igp: float, year, reference: str = None):
         self._set_field('pib', format_as_currency(igp))
         self._set_field('pib_data', str(year))
-        if reference:
-            self._set_field('pib_ref', reference)
+        self._set_field('pib_ref', reference if reference else '')
 
     def edit_igp_per_capita(self, igp_per_capita: float, year):
         self._set_field('pib_per_capita', format_as_currency(igp_per_capita))

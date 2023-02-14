@@ -66,7 +66,7 @@ def make_reference(refname: str, link: str, title: str, publisher: str, year):
     ref = '<ref name="' + refname + '">{{Citar web'
     ref += ' |url=' + link
     ref += ' |titulo=' + title
-    ref += ' |publicado=' + publisher
+    ref += ' |publicado=[[' + publisher + ']]'
     ref += ' |ano=' + str(year)
     ref += '}}</ref>'
 
