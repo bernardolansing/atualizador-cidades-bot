@@ -1,5 +1,13 @@
 import pywikibot
 from general_utils import format_as_currency
+from enum import StrEnum
+
+
+class RankableField(StrEnum):
+    POPULATION = 'população_pos'
+    HDI = 'idh_pos'
+    GINI = 'gini_pos'
+    IGP = 'pib_pos'
 
 
 class Infobox:
@@ -41,6 +49,25 @@ class Infobox:
         self._set_field('população', str(population))
         self._set_field('população_data', str(year))
         self._set_field('população_ref', reference if reference else '')
+
+    def edit_ranking_field(self,
+                           ranking: RankableField,
+                           pos_in_state: int = None,
+                           state: str = None,
+                           state_complete_ranking_article_name: str = None,
+                           pos_in_country: int = None,
+                           country_complete_ranking_article_name: str = None):
+        field_value = ''
+        if state and state_complete_ranking_article_name:
+            field_value += f'[[{state_complete_ranking_article_name}|{state}: {pos_in_state}º]] '
+        if pos_in_country and country_complete_ranking_article_name:
+            field_value += f'[[{country_complete_ranking_article_name}|BR: {pos_in_country}º]]'
+
+        self._set_field(ranking, field_value)
+
+    def edit_area(self, area: float, reference: str = None):
+        self._set_field('área', str(area))
+        self._set_field('área_ref', reference if reference else '')
 
     def edit_igp(self, igp: float, year, reference: str = None):
         self._set_field('pib', format_as_currency(igp))

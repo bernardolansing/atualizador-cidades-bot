@@ -70,6 +70,4 @@ def make_reference(refname: str, link: str, title: str, publisher: str, year):
     ref += ' |ano=' + str(year)
     ref += '}}</ref>'
 
-    ref_tag = f'<ref name="{refname}" />'
-
-    return ref, ref_tag
+    return ref
