@@ -1,5 +1,15 @@
-# This module is responsible for performing the editions.
-# It must implement the function perform(), that creates and returns a SerialEdits instance
+"""
+This module is responsible for performing the editions.
+It must implement the function perform(), that creates and returns a SerialEdits instance.
+
+Every time that the bot needs to perform a mass edit, this is the file to be changed. The other
+files are the library, and should only be edited only to improve or adequate to yet unpredicted
+phenomena.
+
+Always run this code in debug mode (DEBUG_MODE=1 in .env file) before performing an actual
+edit in Wikipedia pages. Debug mode copies the new article source to the clipboard, so you
+can easily swap it with the current source when viewing in the browser.
+"""
 
 from edit import SerialEdits
 import xlrd
