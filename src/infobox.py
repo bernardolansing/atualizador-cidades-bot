@@ -36,7 +36,8 @@ class Infobox:
         self.fields[field_name] = field_value
 
     def edit_hdi(self, hdi, year, reference: str = None):
-        self._set_field('idh', str(hdi).replace(',', '.'))
+        # zpad in right side, for fixed 0.123 hdi format
+        self._set_field('idh', str(hdi).replace(',', '.') + '0' * (5 - len(str(hdi))))
         self._set_field('data_idh', str(year))
         self._set_field('idh_ref', reference if reference else '')
 
@@ -57,11 +58,18 @@ class Infobox:
                            state_complete_ranking_article_name: str = None,
                            pos_in_country: int = None,
                            country_complete_ranking_article_name: str = None):
+        assert ranking and state and pos_in_state and pos_in_country
+
         field_value = ''
-        if state and state_complete_ranking_article_name:
+        if state_complete_ranking_article_name:
             field_value += f'[[{state_complete_ranking_article_name}|{state}: {pos_in_state}º]] '
-        if pos_in_country and country_complete_ranking_article_name:
+        else:
+            field_value += f'{state}: {pos_in_state}º '
+
+        if country_complete_ranking_article_name:
             field_value += f'[[{country_complete_ranking_article_name}|BR: {pos_in_country}º]]'
+        else:
+            field_value += f'BR: {pos_in_country}º'
 
         self._set_field(ranking, field_value)
 

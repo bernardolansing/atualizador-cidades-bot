@@ -1,9 +1,10 @@
+import pyperclip
+import os
 from page_utils import find_city_article, produce_new_raw
 from general_utils import get_state_name_by_acronym
 from history import new_history_entry
 from infobox import Infobox
 from pywikibot import Page
-import os
 
 debugging = int(os.getenv('DEBUG_MODE'))
 
@@ -24,9 +25,17 @@ class Edit:
         self.article.text = new_source
         try:
             if debugging:
-                breakpoint()
+                pyperclip.copy(new_source)
+                print(f'New source for {self.article.title()} ({self.article.full_url()}) was copied to clipboard.')
+                input('Press any key to continue.\n')
             else:
                 self.article.save(summary=self.summary)
+        except pyperclip.PyperclipException:
+            print('Error while trying to copy raw to clipboard. Please, make sure you have xclip installed in your')
+            print('system (in case of Linux): sudo apt install xclip')
+            return
+        except KeyboardInterrupt:
+            quit()
         except:
             self.report_failure()
             return

@@ -1,4 +1,4 @@
 pywikibot==7.7.1
 mwparserfromhell==0.6.4
 xlrd==2.0.1
-python-dotenv==0.21.1
+python-dotenv==1.0.0
