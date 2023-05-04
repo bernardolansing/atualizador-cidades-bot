@@ -46,7 +46,7 @@ def get_state_acronym_by_name(name: str):
 def generate_access_date():
     today = date.today()
 
-    day = str(today.day).zfill(2)
+    day = str(today.day)
     month = [
         'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
         'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
@@ -68,6 +68,7 @@ def make_reference(refname: str, link: str, title: str, publisher: str, year):
     ref += ' |titulo=' + title
     ref += ' |publicado=[[' + publisher + ']]'
     ref += ' |ano=' + str(year)
+    ref += ' |acessodata= ' + generate_access_date()
     ref += '}}</ref>'
 
     return ref
