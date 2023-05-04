@@ -1,7 +1,4 @@
 from datetime import date
-import locale
-
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 states = {
     'AC': 'Acre',
@@ -54,10 +51,6 @@ def generate_access_date():
     year = today.year
 
     return f'{day} de {month} de {year}'
-
-
-def format_as_currency(n: float):
-    return locale.currency(n, grouping=True, symbol=False)
 
 
 def make_reference(refname: str, link: str, title: str, publisher: str, year):

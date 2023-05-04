@@ -1,6 +1,6 @@
 import pywikibot
-from general_utils import format_as_currency
 from enum import StrEnum
+from typing import Union
 
 INFOBOX_FIELDS_IN_ORDER = ('nome', 'nome_oficial', 'preposição', 'foto', 'leg_foto', 'oculta bandeira', 'bandeira',
                            'oculta brasão', 'brasão', 'link_bandeira', 'link_brasão', 'oculta hino', 'link_hino',
@@ -52,13 +52,12 @@ class Infobox:
         self.fields[field_name] = field_value
 
     def edit_hdi(self, hdi, year, reference: str = None):
-        # zpad in right side, for fixed 0.123 hdi format
-        self._set_field('idh', str(hdi).replace(',', '.') + '0' * (5 - len(str(hdi))))
+        self._set_field('idh', str(hdi) + '0' * (5 - len(str(hdi))))  # zpad in right side, for fixed 0,123 hdi format
         self._set_field('data_idh', str(year))
         self._set_field('idh_ref', reference if reference else '')
 
     def edit_gini(self, gini: float, year, reference: str = None):
-        self._set_field('gini', str(gini).replace(',', '.'))
+        self._set_field('gini', str(gini))
         self._set_field('data_gini', str(year))
         self._set_field('gini_ref', reference if reference else '')
 
@@ -94,12 +93,12 @@ class Infobox:
         self._set_field('área_ref', reference if reference else '')
 
     def edit_igp(self, igp: float, year, reference: str = None):
-        self._set_field('pib', format_as_currency(igp))
+        self._set_field('pib', number_formatter_preset(igp))
         self._set_field('pib_data', str(year))
         self._set_field('pib_ref', reference if reference else '')
 
     def edit_igp_per_capita(self, igp_per_capita: float, year):
-        self._set_field('pib_per_capita', format_as_currency(igp_per_capita))
+        self._set_field('pib_per_capita', str(igp_per_capita))
         self._set_field('pib_per_capita_data', year)
 
     def generate_raw(self):
@@ -121,3 +120,10 @@ def infobox_field_sorting_function(field_value_pair: tuple):
         return INFOBOX_FIELDS_IN_ORDER.index(field)
     except ValueError:  # found a field that is not in the list. This could be an invalid field or a new one.
         return len(INFOBOX_FIELDS_IN_ORDER)
+
+
+def number_formatter_preset(number: Union[int, float], unit=''):
+    """Returns the number formatting preset with the provided number and optional unit"""
+    formatted_number = str(number) if isinstance(number, int) else f'{float(number):.2f}'
+    unit_arg = ' |' + unit if unit else ''
+    return '{{fmtn |' + formatted_number + unit_arg + '}}'
