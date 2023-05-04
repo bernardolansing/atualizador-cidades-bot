@@ -16,6 +16,7 @@ import xlrd
 from general_utils import make_reference, states, get_state_name_by_acronym
 from infobox import RankableField
 import csv
+import unicodedata
 
 CURRENT_STATE_TARGET = 'RS'
 
@@ -26,14 +27,6 @@ def perform() -> SerialEdits:
     state = CURRENT_STATE_TARGET
     state_name = get_state_name_by_acronym(state)
     cities = make_cities_dict(state)
-
-    standart_reference = make_reference(
-        refname='IBGE-CIDADES-ESTADOS',
-        link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/',
-        title='Cidades e Estados',
-        publisher='IBGE',
-        year=2021
-    )
 
     igp_reference = make_reference(
         refname='PIB',
@@ -46,6 +39,14 @@ def perform() -> SerialEdits:
     selected_cities = list(cities.items())[40:45]
 
     for city, data in selected_cities:
+        standart_reference = make_reference(
+            refname='IBGE-CIDADES-ESTADOS',
+            link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/{city_name_to_ibge_link(city)}.html',
+            title='Cidades e Estados',
+            publisher='IBGE',
+            year=2021
+        )
+
         edit = operation.new_edit(city, state_name)
         infobox = edit.get_infobox()
         infobox.edit_population(data['population'], 2021, reference=standart_reference)
@@ -110,6 +111,12 @@ def perform() -> SerialEdits:
         edit.commit(infobox)
 
     return operation
+
+
+def city_name_to_ibge_link(city_name: str):
+    link = city_name.lower().replace(' ', '-')
+    return unicodedata.normalize('NFKD', link).encode('ASCII', 'ignore').decode('ASCII')  # remove accents and other
+    # letter marks
 
 
 def process_gini(state_acronym: str):
