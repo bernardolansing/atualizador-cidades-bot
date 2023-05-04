@@ -2,6 +2,22 @@ import pywikibot
 from general_utils import format_as_currency
 from enum import StrEnum
 
+INFOBOX_FIELDS_IN_ORDER = ('nome', 'nome_oficial', 'preposição', 'foto', 'leg_foto', 'oculta bandeira', 'bandeira',
+                           'oculta brasão', 'brasão', 'link_bandeira', 'link_brasão', 'oculta hino', 'link_hino',
+                           'lema', 'apelido', 'gentílico', 'mapa', 'esconde_estado', 'posição', 'latP', 'latG', 'latM',
+                           'latS', 'lonP', 'lonG', 'lonM', 'lonS', 'estado', 'região_intermediária', 'região_imediata',
+                           'região_metropolitana', 'vizinhos', 'dist_capital', 'dist_capital_ref', 'capital_link',
+                           'fundação', 'emancipação', 'aniversário', 'distritos', 'distritos_ref', 'prefeito',
+                           'partido', 'mandato_início', 'vereadores', 'vereadores_ref', 'área', 'área_ref', 'área_pos',
+                           'área_urbana', 'área_urbana_data', 'área_urbana_ref', 'população', 'data_pop', 'pop_data',
+                           'população_data', 'população_ref', 'população_pos', 'densidade', 'clima', 'sigla_clima',
+                           'clima_ref', 'altitude', 'altitude_ref', 'fuso', 'CEP', 'idh', 'idh_data', 'data_idh',
+                           'idh_ref', 'idh_pos', 'gini', 'gini_data', 'data_gini', 'gini_ref', 'gini_pos', 'pib',
+                           'pib_data', 'data_pib', 'pib_ref', 'pib_pos', 'pib_per_capita', 'pib_per_capita_data',
+                           'data_pib_per_capita', 'padroeiro', 'site_prefeitura', 'site', 'site_câmara')
+
+DEPRECATED_INFOBOX_FIELDS = 'mandato_fim', 'fim_mandato'
+
 
 class RankableField(StrEnum):
     POPULATION = 'população_pos'
@@ -87,9 +103,21 @@ class Infobox:
         self._set_field('pib_per_capita_data', year)
 
     def generate_raw(self):
+        params = sorted(self.fields.items(), key=infobox_field_sorting_function)
+
         raw = '{{Info/Município do Brasil\n'
-        for field, value in self.fields.items():
-            raw += '| ' + field + ' = ' + str(value) + '\n'
+        for field, value in params:
+            if field in DEPRECATED_INFOBOX_FIELDS:
+                continue
+            raw += f'| {field} = {value}\n'
 
         raw += '}}'
         return raw
+
+
+def infobox_field_sorting_function(field_value_pair: tuple):
+    field = field_value_pair[0]
+    try:
+        return INFOBOX_FIELDS_IN_ORDER.index(field)
+    except ValueError:  # found a field that is not in the list. This could be an invalid field or a new one.
+        return len(INFOBOX_FIELDS_IN_ORDER)
