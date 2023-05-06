@@ -51,27 +51,31 @@ class Infobox:
     def _set_field(self, field_name: str, field_value: str):
         self.fields[field_name] = field_value
 
+    def _clear_field(self, field_name: str):
+        if self.fields.get(field_name) is not None:
+            del self.fields[field_name]
+
     def edit_hdi(self, hdi, year, reference: str = None):
         self._set_field('idh', str(hdi) + '0' * (5 - len(str(hdi))))  # zpad in right side, for fixed 0,123 hdi format
         self._set_field('data_idh', str(year))
         self._set_field('idh_ref', reference if reference else '')
+        self._clear_field('idh_data')
 
     def edit_gini(self, gini: float, year, reference: str = None):
         self._set_field('gini', str(gini))
         self._set_field('data_gini', str(year))
         self._set_field('gini_ref', reference if reference else '')
+        self._clear_field('gini_data')
 
     def edit_population(self, population, year, reference: str = None):
         self._set_field('população', str(population))
-        self._set_field('população_data', str(year))
+        self._set_field('data_pop', str(year))
         self._set_field('população_ref', reference if reference else '')
+        self._clear_field('pop_data')
+        self._clear_field('população_data')
 
-    def edit_ranking_field(self,
-                           ranking: RankableField,
-                           pos_in_state: int = None,
-                           state: str = None,
-                           state_complete_ranking_article_name: str = None,
-                           pos_in_country: int = None,
+    def edit_ranking_field(self, ranking: RankableField, pos_in_state: int = None, state: str = None,
+                           state_complete_ranking_article_name: str = None, pos_in_country: int = None,
                            country_complete_ranking_article_name: str = None):
         assert ranking and state and pos_in_state and pos_in_country
 
@@ -94,12 +98,14 @@ class Infobox:
 
     def edit_igp(self, igp: float, year, reference: str = None):
         self._set_field('pib', number_formatter_preset(igp))
-        self._set_field('pib_data', str(year))
+        self._set_field('data_pib', str(year))
         self._set_field('pib_ref', reference if reference else '')
+        self._clear_field('pib_data')
 
     def edit_igp_per_capita(self, igp_per_capita: float, year):
         self._set_field('pib_per_capita', str(igp_per_capita))
-        self._set_field('pib_per_capita_data', year)
+        self._set_field('data_pib_per_capita', year)
+        self._clear_field('pib_per_capita_data')
 
     def generate_raw(self):
         params = sorted(self.fields.items(), key=infobox_field_sorting_function)
