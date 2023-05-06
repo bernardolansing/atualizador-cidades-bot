@@ -4,19 +4,20 @@ from typing import Union
 
 INFOBOX_FIELDS_IN_ORDER = ('nome', 'nome_oficial', 'preposição', 'foto', 'leg_foto', 'oculta bandeira', 'bandeira',
                            'oculta brasão', 'brasão', 'link_bandeira', 'link_brasão', 'oculta hino', 'link_hino',
-                           'lema', 'apelido', 'gentílico', 'mapa', 'esconde_estado', 'posição', 'latP', 'latG', 'latM',
-                           'latS', 'lonP', 'lonG', 'lonM', 'lonS', 'estado', 'região_intermediária', 'região_imediata',
-                           'região_metropolitana', 'vizinhos', 'dist_capital', 'dist_capital_ref', 'capital_link',
-                           'fundação', 'emancipação', 'aniversário', 'distritos', 'distritos_ref', 'prefeito',
-                           'partido', 'mandato_início', 'vereadores', 'vereadores_ref', 'área', 'área_ref', 'área_pos',
-                           'área_urbana', 'área_urbana_data', 'área_urbana_ref', 'população', 'data_pop', 'pop_data',
-                           'população_data', 'população_ref', 'população_pos', 'densidade', 'clima', 'sigla_clima',
-                           'clima_ref', 'altitude', 'altitude_ref', 'fuso', 'CEP', 'idh', 'idh_data', 'data_idh',
-                           'idh_ref', 'idh_pos', 'gini', 'gini_data', 'data_gini', 'gini_ref', 'gini_pos', 'pib',
-                           'pib_data', 'data_pib', 'pib_ref', 'pib_pos', 'pib_per_capita', 'pib_per_capita_data',
-                           'data_pib_per_capita', 'padroeiro', 'site_prefeitura', 'site', 'site_câmara')
+                           'lema', 'gentílico', 'mapa', 'esconde_estado', 'posição', 'latP', 'latG', 'latM', 'latS',
+                           'lonP', 'lonG', 'lonM', 'lonS', 'estado', 'região_metropolitana', 'vizinhos', 'dist_capital',
+                           'dist_capital_ref', 'capital_link', 'fundação', 'emancipação', 'distritos', 'distritos_ref',
+                           'prefeito', 'partido', 'mandato_início', 'vereadores', 'vereadores_ref', 'área', 'área_ref',
+                           'área_pos', 'área_urbana', 'área_urbana_data', 'área_urbana_ref', 'população', 'data_pop',
+                           'pop_data', 'população_data', 'população_ref', 'população_pos', 'densidade', 'clima',
+                           'sigla_clima', 'clima_ref', 'altitude', 'altitude_ref', 'fuso', 'CEP', 'idh', 'idh_data',
+                           'data_idh', 'idh_ref', 'idh_pos', 'gini', 'gini_data', 'data_gini', 'gini_ref', 'gini_pos',
+                           'pib', 'pib_data', 'data_pib', 'pib_ref', 'pib_pos', 'pib_per_capita', 'pib_per_capita_data',
+                           'data_pib_per_capita', 'site_prefeitura', 'site', 'site_câmara')
 
-DEPRECATED_INFOBOX_FIELDS = 'mandato_fim', 'fim_mandato'
+DEPRECATED_INFOBOX_FIELDS = ('apelido', 'aniversário', 'microrregião', 'data_microrregião', 'mesorregião',
+                             'data_mesorregião', 'região_intermediária', 'data_região_intermediária', 'região_imediata',
+                             'data_região_imediata', 'padroeiro')
 
 
 class RankableField(StrEnum):
