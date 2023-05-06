@@ -220,14 +220,17 @@ def process_pop_and_hdi_rankings(cities: dict):
                 if not city_name:
                     break  # city rows end before a blank row
                 population = int(row[5])
-                if row[8] != '-':  # city was founded before the last census
+                hdi_available = row[8] != '-'  # city was founded before the last census
+                if hdi_available:
                     hdi = float(row[8].replace(',', '.'))
 
                 all_br_pop.append(population)
-                all_br_hdi.append(hdi)
+                if hdi_available:
+                    all_br_hdi.append(hdi)
                 if state == CURRENT_STATE_TARGET:
                     all_state_pop.append(population)
-                    all_state_hdi.append(hdi)
+                    if hdi_available:
+                        all_state_hdi.append(hdi)
 
     all_br_pop.sort(reverse=True)
     all_br_hdi.sort(reverse=True)
