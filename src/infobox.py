@@ -17,7 +17,7 @@ INFOBOX_FIELDS_IN_ORDER = ('nome', 'nome_oficial', 'preposição', 'foto', 'leg_
 
 DEPRECATED_INFOBOX_FIELDS = ('apelido', 'aniversário', 'microrregião', 'data_microrregião', 'mesorregião',
                              'data_mesorregião', 'região_intermediária', 'data_região_intermediária', 'região_imediata',
-                             'data_região_imediata', 'padroeiro')
+                             'data_região_imediata', 'padroeiro', 'área_pos')
 
 
 class RankableField(StrEnum):
