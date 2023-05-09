@@ -7,15 +7,8 @@ with open('history.txt', 'r') as file:
     current_history = file.read()
 
 
-def new_history_entry(
-        amount_ordered: int,
-        amount_done: int,
-        operator_name: str,
-        reference_summary: str,
-        public_summary: str,
-        reported_sucess: int = None
-):
-    assert reported_sucess is None or reported_sucess <= amount_done
+def new_history_entry(amount_ordered: int, amount_done: int, operator_name: str, reference_summary: str,
+                      public_summary: str):
 
     entry_id = get_new_id()
     now = datetime.now()
@@ -31,9 +24,6 @@ def new_history_entry(
            + f'Comentário interno: {reference_summary}\n' \
            + f'Descrição pública da edição: {public_summary}\n' \
            + f'Operador: {operator_name}\n'
-
-    if reported_sucess:
-        text += f'Sucesso reportador pelo operador: {to_percentage(reported_sucess / amount_done)}\n'
 
     insert_into_file_and_write(text)
 

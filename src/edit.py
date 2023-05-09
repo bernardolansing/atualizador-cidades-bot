@@ -72,7 +72,7 @@ class SerialEdits:
 
         self.operator = operator
         self.reference_summary = reference_summary
-        self.public_summary = public_summary
+        self.public_summary = public_summary.strip()
 
     def new_edit(self, city_name: str, state: str):
         state_name = get_state_name_by_acronym(state) if len(state) == 2 else state
@@ -86,25 +86,10 @@ class SerialEdits:
         if debugging:
             return
 
-        while True:
-            answer = input('Do you wish to report a success rate? [y] / [n] ')
-            if answer.lower() == 'y':
-                reported_success_count = int(input('How many pages were successfully edited? '))
-                break
-            else:
-                reported_success_count = None
-                break
-
         done_count = 0
         for edit in self.edits:
             if edit.success:
                 done_count += 1
 
-        new_history_entry(
-            amount_ordered=self.current_id - 1,
-            amount_done=done_count,
-            operator_name=self.operator,
-            reference_summary=self.reference_summary,
-            public_summary=self.public_summary,
-            reported_sucess=reported_success_count
-        )
+        new_history_entry(amount_ordered=self.current_id - 1, amount_done=done_count, operator_name=self.operator,
+                          reference_summary=self.reference_summary, public_summary=self.public_summary)
