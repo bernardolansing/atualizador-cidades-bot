@@ -28,31 +28,34 @@ def perform() -> SerialEdits:
     state_name = get_state_name_by_acronym(state)
     cities = make_cities_dict(state)
 
-    igp_reference = make_reference(
-        refname='PIB',
-        link='https://sidra.ibge.gov.br/tabela/5938#resultado',
-        title='Tabela 5938 - Produto interno bruto a preços correntes, impostos, líquidos de subsídios, sobre produtos a preços correntes e valor adicionado bruto a preços correntes total e por atividade econômica, e respectivas participações - Referência 2010',
-        publisher='IBGE',
-        year=2020
-    )
+    population_reference = make_reference(refname='ATT_BOT_POP_0522', publisher='IBGE', year=2021,
+                                          title='ESTIMATIVAS DA POPULAÇÃO RESIDENTE NO BRASIL E UNIDADES DA FEDERAÇÃO '
+                                                'COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021',
+                                          link='https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/'
+                                               'POP2021_20221212.pdf')
+    igp_reference = make_reference(refname='PIB', publisher='IBGE', year=2020,
+                                   link='https://sidra.ibge.gov.br/tabela/5938#resultado',
+                                   title='Tabela 5938 - Produto interno bruto a preços correntes, impostos, líquidos '
+                                         'de subsídios, sobre produtos a preços correntes e valor adicionado bruto a '
+                                         'preços correntes total e por atividade econômica, e respectivas participações'
+                                         ' - Referência 2010')
+    hdi_reference = make_reference(refname='ATT_BOT_IDH_0522', publisher='IBGE', year=2010, title='Ranking',
+                                   link='http://www.atlasbrasil.org.br/ranking')
 
-    selected_cities = list(cities.items())[49:50]
+    selected_cities = list(cities.items())[70:75]
 
     for city, data in selected_cities:
-        standart_reference = make_reference(
-            refname='IBGE-CIDADES-ESTADOS',
-            link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/{city_name_to_ibge_link(city)}.html',
-            title='Cidades e Estados',
-            publisher='IBGE',
-            year=2021
-        )
+        area_reference = make_reference(refname='ATT_BOT_AREA_0522',
+                                        link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/'
+                                             f'{city_name_to_ibge_link(city)}.html',
+                                        title='Cidades e Estados', publisher='IBGE', year=2021)
 
         edit = operation.new_edit(city, state_name)
         infobox = edit.get_infobox()
-        infobox.edit_population(data['population'], 2021, reference=standart_reference)
-        infobox.edit_area(data['area'], reference=standart_reference)
+        infobox.edit_population(data['population'], 2021, reference=population_reference)
+        infobox.edit_area(data['area'], reference=area_reference)
         infobox.edit_igp_per_capita(data['igp_per_capita'], 2020)
-        infobox.edit_hdi(data['hdi'], 2010, reference=standart_reference)
+        infobox.edit_hdi(data['hdi'], 2010, reference=hdi_reference)
 
         pop_rank_br = data.get('population_rank_br')
         pop_rank_state = data.get('population_rank_state')
@@ -98,7 +101,7 @@ def perform() -> SerialEdits:
         gini_rank_state = data.get('gini_rank_state')
 
         if gini:
-            infobox.edit_gini(gini, 2010, reference=standart_reference)
+            infobox.edit_gini(gini, 2010)
 
         if gini_rank_br and gini_rank_state:
             infobox.edit_ranking_field(

@@ -105,9 +105,9 @@ class Infobox:
         self._set_field('pib_ref', reference if reference else '')
         self._clear_field('pib_data')
 
-    def edit_igp_per_capita(self, igp_per_capita: float, year):
+    def edit_igp_per_capita(self, igp_per_capita: float, year: int):
         self._set_field('pib_per_capita', str(igp_per_capita))
-        self._set_field('data_pib_per_capita', year)
+        self._set_field('data_pib_per_capita', str(year))
         self._clear_field('pib_per_capita_data')
 
     def generate_raw(self):
