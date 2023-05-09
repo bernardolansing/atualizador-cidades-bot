@@ -36,7 +36,7 @@ def perform() -> SerialEdits:
         year=2020
     )
 
-    selected_cities = list(cities.items())[45:50]
+    selected_cities = list(cities.items())[49:50]
 
     for city, data in selected_cities:
         standart_reference = make_reference(

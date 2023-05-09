@@ -98,7 +98,9 @@ class Infobox:
         self._set_field('área_ref', reference if reference else '')
 
     def edit_igp(self, igp: float, year, reference: str = None):
-        self._set_field('pib', number_formatter_preset(igp))
+        """IGP in BRL. Do not pass it as a one thousand factor."""
+        igp = igp / 1000
+        self._set_field('pib', number_formatter_preset(igp, unit='mil'))
         self._set_field('data_pib', str(year))
         self._set_field('pib_ref', reference if reference else '')
         self._clear_field('pib_data')
@@ -131,6 +133,6 @@ def infobox_field_sorting_function(field_value_pair: tuple):
 
 def number_formatter_preset(number: Union[int, float], unit=''):
     """Returns the number formatting preset with the provided number and optional unit"""
-    formatted_number = str(number) if isinstance(number, int) else f'{float(number):.2f}'
+    formatted_number = str(number) if isinstance(number, int) else f'{float(number):.2f}'.replace(',', '.')
     unit_arg = ' |' + unit if unit else ''
     return '{{fmtn |' + formatted_number + unit_arg + '}}'
