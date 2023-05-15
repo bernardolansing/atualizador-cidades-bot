@@ -3,6 +3,30 @@ Por favor, NÃO o modifique manualmente, o programa cuidará de todas as altera�
 Os registros estão postados em ordem cronológica decrescente (mais recentes por cima).
 
 ------------------------------------------------------------------------------------------------------------------------
+[00007] @ 12 de maio de 2023 14:5 (GMT -03)
+Edições encomendadas: 191
+Edições concluídas: 188 (98%)
+Edições fracassadas: 3 (2%)
+Comentário interno: Continuação da edição em massa para cidades do Rio Grande do Sul. Essa é a terceira tentativa. As anteriores falharam por erros internos da biblioteca Pywikibot e por cidades cuja grafia do nome está diferente.
+Descrição pública da edição: [Atualizador-cidades-bot] atualizada infobox do município
+Operador: Bernardo Lansing
+
+[00006] @ 11 de maio de 2023 20:12 (GMT -03)
+Edições encomendadas: 5
+Edições concluídas: 5 (100%)
+Edições fracassadas: 0 (0%)
+Comentário interno: Alterada referência do PIB e não será mais editado o índice de Gini até o próximo censo
+Descrição pública da edição: 
+Operador: Bernardo Lansing
+
+[00005] @ 9 de maio de 2023 20:50 (GMT -03)
+Edições encomendadas: 5
+Edições concluídas: 5 (100%)
+Edições fracassadas: 0 (0%)
+Comentário interno: Provavelmente última edição de testes
+Descrição pública da edição: [Atualizador-cidades-bot] testes finais
+Operador: Bernardo Lansing
+
 [00004] @ 4 de maio de 2023 21:9 (GMT -03)
 Edições encomendadas: 5
 Edições concluídas: 5 (100%)

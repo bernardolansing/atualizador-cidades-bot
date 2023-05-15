@@ -33,85 +33,91 @@ def perform() -> SerialEdits:
                                                 'COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021',
                                           link='https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/'
                                                'POP2021_20221212.pdf')
-    igp_reference = make_reference(refname='PIB', publisher='IBGE', year=2020,
-                                   link='https://sidra.ibge.gov.br/tabela/5938#resultado',
-                                   title='Tabela 5938 - Produto interno bruto a preços correntes, impostos, líquidos '
-                                         'de subsídios, sobre produtos a preços correntes e valor adicionado bruto a '
-                                         'preços correntes total e por atividade econômica, e respectivas participações'
-                                         ' - Referência 2010')
+    igp_reference = make_reference(refname='ATT_BOT_PIB_0522', publisher='IBGE', year=2020,
+                                   link='https://ftp.ibge.gov.br/Pib_Municipios/2020/base/base_de_dados_2010_2020_xls'
+                                        '.zip', title='Produto Interno Bruto dos Municípios - 2010 a 2020')
     hdi_reference = make_reference(refname='ATT_BOT_IDH_0522', publisher='IBGE', year=2010, title='Ranking',
                                    link='http://www.atlasbrasil.org.br/ranking')
 
-    selected_cities = list(cities.items())[70:75]
+    selected_cities = list(cities.items())[306:]  # ARRRUMAR PASSA SETE E ATUALIZAR DE LÁ ATÉ PAULO BENTO
 
     for city, data in selected_cities:
-        area_reference = make_reference(refname='ATT_BOT_AREA_0522',
-                                        link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/'
-                                             f'{city_name_to_ibge_link(city)}.html',
-                                        title='Cidades e Estados', publisher='IBGE', year=2021)
+        try:
+            edit = operation.new_edit(city, state_name)
+        except:
+            print('error while creating edit object for', city)
+            continue
+        try:
+            area_reference = make_reference(refname='ATT_BOT_AREA_0522',
+                                            link=f'https://www.ibge.gov.br/cidades-e-estados/{state.lower()}/'
+                                                 f'{city_name_to_ibge_link(city)}.html',
+                                            title='Cidades e Estados', publisher='IBGE', year=2021)
 
-        edit = operation.new_edit(city, state_name)
-        infobox = edit.get_infobox()
-        infobox.edit_population(data['population'], 2021, reference=population_reference)
-        infobox.edit_area(data['area'], reference=area_reference)
-        infobox.edit_igp_per_capita(data['igp_per_capita'], 2020)
-        infobox.edit_hdi(data['hdi'], 2010, reference=hdi_reference)
+            infobox = edit.get_infobox()
+            infobox.edit_population(data['population'], 2021, reference=population_reference)
+            infobox.edit_area(data['area'], reference=area_reference)
+            infobox.edit_igp_per_capita(data['igp_per_capita'], 2020)
+            infobox.edit_hdi(data['hdi'], 2010, reference=hdi_reference)
 
-        pop_rank_br = data.get('population_rank_br')
-        pop_rank_state = data.get('population_rank_state')
-        infobox.edit_ranking_field(
-            ranking=RankableField.POPULATION,
-            pos_in_state=pop_rank_state,
-            pos_in_country=pop_rank_br,
-            state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por população',
-            country_complete_ranking_article_name='Lista de municípios do Brasil por população',
-            state=state
-        )
-
-        hdi_rank_br = data.get('hdi_rank_br')
-        hdi_rank_state = data.get('hdi_rank_state')
-        if hdi_rank_state and hdi_rank_br:
+            pop_rank_br = data.get('population_rank_br')
+            pop_rank_state = data.get('population_rank_state')
             infobox.edit_ranking_field(
-                ranking=RankableField.HDI,
-                pos_in_state=hdi_rank_state,
-                pos_in_country=hdi_rank_br,
-                state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por IDH-M',
-                country_complete_ranking_article_name='Lista de municípios do Brasil por IDH',
+                ranking=RankableField.POPULATION,
+                pos_in_state=pop_rank_state,
+                pos_in_country=pop_rank_br,
+                state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por população',
+                country_complete_ranking_article_name='Lista de municípios do Brasil por população',
                 state=state
             )
 
-        # some cities may not be included at igp and gini tables
-        igp = data.get('igp')
-        igp_rank_br = data.get('igp_rank_br')
-        igp_rank_state = data.get('igp_rank_state')
-        if igp:
-            infobox.edit_igp(igp, 2020, reference=igp_reference)
-        if igp_rank_state:
-            infobox.edit_ranking_field(
-                ranking=RankableField.IGP,
-                pos_in_state=igp_rank_state,
-                pos_in_country=igp_rank_br,
-                state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por PIB',
-                country_complete_ranking_article_name='Lista de municípios do Brasil por PIB',
-                state=state,
-            )
+            hdi_rank_br = data.get('hdi_rank_br')
+            hdi_rank_state = data.get('hdi_rank_state')
+            if hdi_rank_state and hdi_rank_br:
+                infobox.edit_ranking_field(
+                    ranking=RankableField.HDI,
+                    pos_in_state=hdi_rank_state,
+                    pos_in_country=hdi_rank_br,
+                    state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por IDH-M',
+                    country_complete_ranking_article_name='Lista de municípios do Brasil por IDH',
+                    state=state
+                )
 
-        gini = data.get('gini')
-        gini_rank_br = data.get('gini_rank_br')
-        gini_rank_state = data.get('gini_rank_state')
+            # some cities may not be included at igp and gini tables
+            igp = data.get('igp')
+            igp_rank_br = data.get('igp_rank_br')
+            igp_rank_state = data.get('igp_rank_state')
+            if igp:
+                infobox.edit_igp(igp, 2020, reference=igp_reference)
+            if igp_rank_state:
+                infobox.edit_ranking_field(
+                    ranking=RankableField.IGP,
+                    pos_in_state=igp_rank_state,
+                    pos_in_country=igp_rank_br,
+                    state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por PIB',
+                    country_complete_ranking_article_name='Lista de municípios do Brasil por PIB',
+                    state=state,
+                )
 
-        if gini:
-            infobox.edit_gini(gini, 2010)
+            # WITHOUT REFERENCE FOR GINI
 
-        if gini_rank_br and gini_rank_state:
-            infobox.edit_ranking_field(
-                ranking=RankableField.GINI,
-                pos_in_state=gini_rank_state,
-                pos_in_country=gini_rank_br,
-                state=state
-            )
+            # gini = data.get('gini')
+            # gini_rank_br = data.get('gini_rank_br')
+            # gini_rank_state = data.get('gini_rank_state')
 
-        edit.commit(infobox)
+            # if gini:
+            #     infobox.edit_gini(gini, 2010)
+            #
+            # if gini_rank_br and gini_rank_state:
+            #     infobox.edit_ranking_field(
+            #         ranking=RankableField.GINI,
+            #         pos_in_state=gini_rank_state,
+            #         pos_in_country=gini_rank_br,
+            #         state=state
+            #     )
+
+            edit.commit(infobox)
+        except:
+            edit.report_failure()
 
     return operation
 
