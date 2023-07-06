@@ -39,7 +39,7 @@ def perform() -> SerialEdits:
     hdi_reference = make_reference(refname='ATT_BOT_IDH_0522', publisher='IBGE', year=2010, title='Ranking',
                                    link='http://www.atlasbrasil.org.br/ranking')
 
-    selected_cities = list(cities.items())[306:]  # ARRRUMAR PASSA SETE E ATUALIZAR DE LÁ ATÉ PAULO BENTO
+    selected_cities = list(cities.items())[363:364]
 
     for city, data in selected_cities:
         try:
@@ -97,23 +97,6 @@ def perform() -> SerialEdits:
                     country_complete_ranking_article_name='Lista de municípios do Brasil por PIB',
                     state=state,
                 )
-
-            # WITHOUT REFERENCE FOR GINI
-
-            # gini = data.get('gini')
-            # gini_rank_br = data.get('gini_rank_br')
-            # gini_rank_state = data.get('gini_rank_state')
-
-            # if gini:
-            #     infobox.edit_gini(gini, 2010)
-            #
-            # if gini_rank_br and gini_rank_state:
-            #     infobox.edit_ranking_field(
-            #         ranking=RankableField.GINI,
-            #         pos_in_state=gini_rank_state,
-            #         pos_in_country=gini_rank_br,
-            #         state=state
-            #     )
 
             edit.commit(infobox)
         except:

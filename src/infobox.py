@@ -1,4 +1,5 @@
 import pywikibot
+import logging
 from enum import StrEnum
 from typing import Union
 
@@ -29,6 +30,7 @@ class RankableField(StrEnum):
 
 class Infobox:
     def __init__(self, article: pywikibot.Page):
+        self.article = article
         self.fields = {}
         template_with_args = None
         for template in article.templatesWithParams():
@@ -57,18 +59,24 @@ class Infobox:
             del self.fields[field_name]
 
     def edit_hdi(self, hdi, year, reference: str = None):
+        self._check_and_warn_for_named_references('idh_ref')
+
         self._set_field('idh', str(hdi) + '0' * (5 - len(str(hdi))))  # zpad in right side, for fixed 0,123 hdi format
         self._set_field('data_idh', str(year))
         self._set_field('idh_ref', reference if reference else '')
         self._clear_field('idh_data')
 
     def edit_gini(self, gini: float, year, reference: str = None):
+        self._check_and_warn_for_named_references('gini_ref')
+
         self._set_field('gini', str(gini))
         self._set_field('data_gini', str(year))
         self._set_field('gini_ref', reference if reference else '')
         self._clear_field('gini_data')
 
     def edit_population(self, population, year, reference: str = None):
+        self._check_and_warn_for_named_references('população_ref')
+
         self._set_field('população', str(population))
         self._set_field('data_pop', str(year))
         self._set_field('população_ref', reference if reference else '')
@@ -94,12 +102,16 @@ class Infobox:
         self._set_field(ranking, field_value)
 
     def edit_area(self, area: float, reference: str = None):
+        self._check_and_warn_for_named_references('área_ref')
+
         self._set_field('área', str(area))
         self._set_field('área_ref', reference if reference else '')
 
     def edit_igp(self, igp: float, year, reference: str = None):
         """IGP in BRL. Do not pass it as a one thousand factor."""
-        igp = igp / 1000
+        self._check_and_warn_for_named_references('pib_ref')
+
+        igp /= 1000
         self._set_field('pib', number_formatter_preset(igp, unit='mil'))
         self._set_field('data_pib', str(year))
         self._set_field('pib_ref', reference if reference else '')
@@ -121,6 +133,14 @@ class Infobox:
 
         raw += '}}'
         return raw
+
+    def _check_and_warn_for_named_references(self, ref_field: str):
+        """Checks if the field already contained a named reference and warns the operator that it may have caused a
+        break in the article."""
+        ref_content = self.fields.get(ref_field)
+        if ref_content and 'name' in ref_content:
+            logging.warning(f'Attention! Named reference replaced while editing {self.article.title()} '
+                            f'({self.article.full_url()}).')
 
 
 def infobox_field_sorting_function(field_value_pair: tuple):
