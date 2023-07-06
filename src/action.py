@@ -11,12 +11,13 @@ edit in Wikipedia pages. Debug mode copies the new article source to the clipboa
 can easily swap it with the current source when viewing in the browser.
 """
 
-from edit import SerialEdits
 import xlrd
-from general_utils import make_reference, states, get_state_name_by_acronym
-from infobox import RankableField
 import csv
 import unicodedata
+import re
+from edit import SerialEdits
+from general_utils import make_reference, states, get_state_name_by_acronym
+from infobox import RankableField
 
 CURRENT_STATE_TARGET = 'RS'
 
@@ -137,7 +138,7 @@ def process_gini(state_acronym: str):
     return obj
 
 
-def process_igp(state_acronym):
+def process_igp(state_acronym: str):
     sheet = xlrd.open_workbook('datafiles/pib.xls').sheet_by_index(0)
     obj = {}
     all_igps = []
@@ -163,6 +164,40 @@ def process_igp(state_acronym):
     return obj
 
 
+def process_population(state_acronym: str):
+    sheet = xlrd.open_workbook('datafiles/pop_cidades_2022_previa.xls').sheet_by_index(0)
+    obj = {}
+    all_populations = []
+    state_populations = []
+
+    row = 2
+    while True:
+        state = sheet.cell_value(row, 0)
+        if not state:
+            break
+        city_name = sheet.cell_value(row, 3)
+        try:
+            population = int(sheet.cell_value(row, 4))
+        except ValueError:
+            population = int(re.sub(pattern='[^0-9]', repl='', string=sheet.cell_value(row, 4)))
+
+        all_populations.append(population)
+        if state == state_acronym:
+            state_populations.append(population)
+            obj[city_name] = {'population': population}
+
+        row += 1
+
+    all_populations.sort(reverse=True)
+    state_populations.sort(reverse=True)
+
+    for entry in obj.values():
+        entry['population_rank_br'] = all_populations.index(entry['population']) + 1
+        entry['population_rank_state'] = state_populations.index(entry['population']) + 1
+
+    return obj
+
+
 def make_cities_dict(state_acronym: str):
     general_sheet = xlrd.open_workbook(f'datafiles/info-{state_acronym.lower()}.xls').sheet_by_index(0)
 
@@ -170,10 +205,8 @@ def make_cities_dict(state_acronym: str):
     row = 3
     while len(general_sheet.cell_value(row, 0)) >= 2:
         city_name = general_sheet.cell_value(row, 0)
-        pop = int(general_sheet.cell_value(row, 5))
         hdi = general_sheet.cell_value(row, 8)
         cities[city_name] = {
-            'population': pop,
             'area': general_sheet.cell_value(row, 4),
             'hdi': hdi,
             'igp_per_capita': general_sheet.cell_value(row, 12)
@@ -183,12 +216,14 @@ def make_cities_dict(state_acronym: str):
 
     gini_obj = process_gini(state_acronym)
     igp_obj = process_igp(state_acronym)
+    population_obj = process_population(state_acronym)
     process_pop_and_hdi_rankings(cities)
 
     for city, entry in cities.items():
         try:
             entry.update(gini_obj[city])
             entry.update(igp_obj[city])
+            entry.update(population_obj[city])
         except KeyError:
             continue
 
@@ -196,9 +231,7 @@ def make_cities_dict(state_acronym: str):
 
 
 def process_pop_and_hdi_rankings(cities: dict):
-    all_br_pop = []
     all_br_hdi = []
-    all_state_pop = []
     all_state_hdi = []
 
     for state in states.keys():
@@ -211,22 +244,17 @@ def process_pop_and_hdi_rankings(cities: dict):
                 city_name = row[0]
                 if not city_name:
                     break  # city rows end before a blank row
-                population = int(row[5])
                 hdi_available = row[8] != '-'  # city was founded before the last census
                 if hdi_available:
                     hdi = float(row[8].replace(',', '.'))
 
-                all_br_pop.append(population)
                 if hdi_available:
                     all_br_hdi.append(hdi)
                 if state == CURRENT_STATE_TARGET:
-                    all_state_pop.append(population)
                     if hdi_available:
                         all_state_hdi.append(hdi)
 
-    all_br_pop.sort(reverse=True)
     all_br_hdi.sort(reverse=True)
-    all_state_pop.sort(reverse=True)
     all_state_hdi.sort(reverse=True)
 
     with open(f'datafiles/info-{CURRENT_STATE_TARGET.lower()}.csv', newline='') as csvfile:
@@ -239,11 +267,7 @@ def process_pop_and_hdi_rankings(cities: dict):
             if not city_name:
                 break  # no more cities
 
-            population = int(row[5])
             hdi = float(row[8].replace(',', '.')) if row[8] != '-' else None
-
-            cities[city_name]['population_rank_br'] = all_br_pop.index(population) + 1
-            cities[city_name]['population_rank_state'] = all_state_pop.index(population) + 1
             if hdi:
                 cities[city_name]['hdi_rank_br'] = all_br_hdi.index(hdi) + 1
                 cities[city_name]['hdi_rank_state'] = all_state_hdi.index(hdi) + 1
