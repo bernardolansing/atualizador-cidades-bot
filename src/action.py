@@ -19,7 +19,12 @@ from edit import SerialEdits
 from general_utils import make_reference, states, get_state_name_by_acronym
 from infobox import RankableField
 
-CURRENT_STATE_TARGET = 'RS'
+CURRENT_STATE_TARGET = 'AC'
+STATE_POPULATION_RANKING_ARTICLE = 'Lista de municípios do Acre por população'
+STATE_HDI_RANKING_ARTICLE = 'Lista de municípios do Acre por IDH-M'
+STATE_IGP_RANKING_ARTICLE = 'Lista de municípios do Acre por PIB'
+SELECTED_CITIES_START_INDEX = 5
+SELECTED_CITIES_AMOUNT = 22
 
 
 def perform() -> SerialEdits:
@@ -40,7 +45,8 @@ def perform() -> SerialEdits:
     hdi_reference = make_reference(refname='ATT_BOT_IDH_0522', publisher='IBGE', year=2010, title='Ranking',
                                    link='http://www.atlasbrasil.org.br/ranking')
 
-    selected_cities = list(cities.items())[363:364]
+    selected_cities = list(cities.items())[SELECTED_CITIES_START_INDEX:
+                                           SELECTED_CITIES_START_INDEX + SELECTED_CITIES_AMOUNT]
 
     for city, data in selected_cities:
         try:
@@ -66,7 +72,7 @@ def perform() -> SerialEdits:
                 ranking=RankableField.POPULATION,
                 pos_in_state=pop_rank_state,
                 pos_in_country=pop_rank_br,
-                state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por população',
+                state_complete_ranking_article_name=STATE_POPULATION_RANKING_ARTICLE,
                 country_complete_ranking_article_name='Lista de municípios do Brasil por população',
                 state=state
             )
@@ -78,7 +84,7 @@ def perform() -> SerialEdits:
                     ranking=RankableField.HDI,
                     pos_in_state=hdi_rank_state,
                     pos_in_country=hdi_rank_br,
-                    state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por IDH-M',
+                    state_complete_ranking_article_name=STATE_HDI_RANKING_ARTICLE,
                     country_complete_ranking_article_name='Lista de municípios do Brasil por IDH',
                     state=state
                 )
@@ -94,7 +100,7 @@ def perform() -> SerialEdits:
                     ranking=RankableField.IGP,
                     pos_in_state=igp_rank_state,
                     pos_in_country=igp_rank_br,
-                    state_complete_ranking_article_name='Lista de municípios do Rio Grande do Sul por PIB',
+                    state_complete_ranking_article_name=STATE_IGP_RANKING_ARTICLE,
                     country_complete_ranking_article_name='Lista de municípios do Brasil por PIB',
                     state=state,
                 )
@@ -199,35 +205,39 @@ def process_population(state_acronym: str):
 
 
 def make_cities_dict(state_acronym: str):
-    general_sheet = xlrd.open_workbook(f'datafiles/info-{state_acronym.lower()}.xls').sheet_by_index(0)
-
     cities = {}
-    row = 3
-    while len(general_sheet.cell_value(row, 0)) >= 2:
-        city_name = general_sheet.cell_value(row, 0)
-        hdi = general_sheet.cell_value(row, 8)
-        cities[city_name] = {
-            'area': general_sheet.cell_value(row, 4),
-            'hdi': hdi,
-            'igp_per_capita': general_sheet.cell_value(row, 12)
-        }
 
-        row += 1
+    with open(f'datafiles/info-{state_acronym.lower()}.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=';')
+        for _ in range(3):
+            next(reader)  # discard header rows
 
-    gini_obj = process_gini(state_acronym)
-    igp_obj = process_igp(state_acronym)
-    population_obj = process_population(state_acronym)
-    process_pop_and_hdi_rankings(cities)
+        for row in reader:
+            city_name = row[0]
+            if not city_name:  # end of table
+                break
+            area = float(row[4].replace(',', '.'))
+            hdi = float(row[8].replace(',', '.')) if row[8] != '-' else None  # some cities don't have HDI calculated
+            igp_per_capita = float(row[12].replace(',', '.'))
 
-    for city, entry in cities.items():
-        try:
-            entry.update(gini_obj[city])
-            entry.update(igp_obj[city])
-            entry.update(population_obj[city])
-        except KeyError:
-            continue
+            cities[city_name] = {
+                'area': area,
+                'hdi': hdi,
+                'igp_per_capita': igp_per_capita
+            }
 
-    return cities
+        igp_object = process_igp(state_acronym)
+        population_object = process_population(state_acronym)
+        process_pop_and_hdi_rankings(cities)
+
+        for city, entry in cities.items():
+            try:
+                entry.update(igp_object[city])
+                entry.update(population_object[city])
+            except KeyError:
+                continue
+
+        return cities
 
 
 def process_pop_and_hdi_rankings(cities: dict):

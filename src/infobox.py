@@ -2,6 +2,7 @@ import pywikibot
 import logging
 from enum import StrEnum
 from typing import Union
+from reference_guard import extract_refname
 
 INFOBOX_FIELDS_IN_ORDER = ('nome', 'nome_oficial', 'preposição', 'foto', 'leg_foto', 'oculta bandeira', 'bandeira',
                            'oculta brasão', 'brasão', 'link_bandeira', 'link_brasão', 'oculta hino', 'link_hino',
@@ -139,8 +140,16 @@ class Infobox:
         break in the article."""
         ref_content = self.fields.get(ref_field)
         if ref_content and 'name' in ref_content:
-            logging.warning(f'Attention! Named reference replaced while editing {self.article.title()} '
-                            f'({self.article.full_url()}).')
+            refname = extract_refname(ref_content)
+
+            # could not extract the reference name, or we have found this reference name multiple times in the article
+            # raw, so we have to check if it is broken
+            if (not refname) or self.article.text.count(refname) > 1:
+                logging.warning(f'Attention! Named reference replaced while editing {self.article.title()} '
+                                f'({self.article.full_url()}). Check for possible break.')
+            else:
+                logging.info(f'Removed previous named reference at {self.article.title()} ({self.article.full_url()}), '
+                             f'but no other use of it was found.')
 
 
 def infobox_field_sorting_function(field_value_pair: tuple):
